@@ -40,3 +40,14 @@ db.system.js.save({_id:'getRequestType', value:function (request_uri_path) {
     return type;
 }});
 
+db.system.js.save({_id:'getRequestParamValue', value: function(uriQuery, key) {
+    var regexPattern = new RegExp(key + '=([^&]*)');
+    var matched = uriQuery.match(regexPattern);
+
+    if (matched != null && matched.length == 2) {
+        return matched[1];
+    } else {
+        return '';
+    }
+}});
+

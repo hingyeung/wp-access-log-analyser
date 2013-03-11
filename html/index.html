@@ -196,35 +196,117 @@
             var chart = new google.visualization.BarChart(document.getElementById('response_size_breakdown'));
             chart.draw(data, options);
         }
-        function drawSearchByGPSChart() {
+        function drawSearchWithImplicitCurLoc() {
             var data = google.visualization.arrayToDataTable(
                     [
                         [
                             "Type", "no. of requests"
                         ],
                         [
-                            "Using current location",
+                            "With lat/lng",
                             7759
                         ],
                         [
-                            "Not using current location",
+                            "Without lat/lng",
                             1930
                         ]
                     ]
             );
 
             var options = {
-                title:'Percentage of WPM searches made with current location'
+                title:'Percentage of WPM searches made with implicit current location'
             };
 
-            var chart = new google.visualization.PieChart(document.getElementById('search_by_gps'));
+            var chart = new google.visualization.PieChart(document.getElementById('search_with_lat_lon'));
+            chart.draw(data, options);
+        }
+        function drawSearchWithExplicitCurLoc() {
+            var data = google.visualization.arrayToDataTable(
+                    [
+                        [
+                            "Type", "no. of requests"
+                        ],
+                        [
+                            "Current location",
+                            971
+                        ],
+                        [
+                            "Other locations",
+                            8718
+                        ]
+                    ]
+            );
+
+            var options = {
+                title:'Percentage of WPM searches made with explicit "Current Location"'
+            };
+
+            var chart = new google.visualization.PieChart(document.getElementById('search_by_current_location'));
+            chart.draw(data, options);
+        }
+        function drawTopSearchTerms() {
+            var data = google.visualization.arrayToDataTable(
+                    [
+                        [
+                            "Search Term", "no. of requests"
+                        ],
+                        [
+                            "ato, nsw",
+                            48
+                        ],
+                        [
+                            "telstra corporation limited, vic",
+                            48
+                        ],
+                        [
+                            "telstra business, Port Macquarie, NSW",
+                            33
+                        ],
+                        [
+                            "Goulburn Valley Grammar School, Shepparton Region, VIC",
+                            12
+                        ],
+                        [
+                            "Bigriver Supermarket, Waikerie SA",
+                            10
+                        ],
+                        [
+                            "Independent Locksmiths & Security, Granville NSW",
+                            9
+                        ],
+                        [
+                            "Ausfuel, gladstone",
+                            7
+                        ],
+                        [
+                            "Brisbane Airport Parking, Brisbane QLD",
+                            7
+                        ],
+                        [
+                            "Independent Locksmiths & Security, Parramatta NSW",
+                            7
+                        ],
+                        [
+                            "walkers arms hotel, Adelaide",
+                            7
+                        ]
+                    ]
+            );
+
+            var options = {
+                title:'Top 10 Business Search Terms'
+            };
+
+            var chart = new google.visualization.PieChart(document.getElementById('top_bus_search_terms'));
             chart.draw(data, options);
         }
         function drawChart() {
             drawRequestTypeChart();
             drawResponseTimeChart();
             drawRequestSizeChart();
-            drawSearchByGPSChart();
+            drawSearchWithImplicitCurLoc();
+            drawSearchWithExplicitCurLoc();
+            drawTopSearchTerms();
         }
     </script>
 </head>
@@ -232,6 +314,8 @@
 <div id="request_type_breakdown" style="width: 900px; height: 500px;"></div>
 <div id="response_time_breakdown" style="width: 900px; height: 500px;"></div>
 <div id="response_size_breakdown" style="width: 900px; height: 500px;"></div>
-<div id="search_by_gps" style="width: 900px; height: 500px;"></div>
+<div id="search_with_lat_lon" style="width: 900px; height: 500px;"></div>
+<div id="search_by_current_location" style="width: 900px; height: 500px;"></div>
+<div id="top_bus_search_terms" style="width: 900px; height: 500px;"></div>
 </body>
 </html>

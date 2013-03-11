@@ -20,7 +20,7 @@ var reduce = function (key, values) {
 }
 
 var mapReduceToNestArray = function(mapReduceResult) {
-    return [['Using current location', mapReduceResult.results[0].value.hasCurPos], ['Not using current location', mapReduceResult.results[0].value.hasNoCurPos]];
+    return [['With lat/lng', mapReduceResult.results[0].value.hasCurPos], ['Without lat/lng', mapReduceResult.results[0].value.hasNoCurPos]];
 }
 
 mapReduceToNestArray(db.prod.mapReduce(map, reduce, {out:{inline:1}, query:{uri_query:{$exists:1}}}));
