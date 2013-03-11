@@ -23,7 +23,18 @@ var mapReduceToNestArray = function(mapReduceResult) {
     return nestedArray;
 }
 
+var mapReduceToChartData = function(mapReduceResult, chartName) {
+    var results = mapReduceResult.results;
+    var data = [];
+    for (var idx = 0; idx < results.length; idx++) {
+        data.push([results[idx]._id, results[idx].value]);
+    }
+    db.chartData.update({chartName: chartName}, {$set: {data: data, chartType: 'pie'}}, {upsert: true});
+}
+
 mapReduceToNestArray(db.prod.mapReduce(map, reduce, {out:{inline:1}, query: {dest_host:'mobile.whitepages.com.au'}}));
+
+//mapReduceToChartData(db.prod.mapReduce(map, reduce, {out:{inline:1}, query: {dest_host:'mobile.whitepages.com.au'}}), 'requestTypeBreakdown');
 
 
 //
