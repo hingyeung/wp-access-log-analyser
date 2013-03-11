@@ -1,0 +1,237 @@
+<html>
+<head>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+        google.load("visualization", "1", {packages:["corechart"]});
+        google.setOnLoadCallback(drawChart);
+        function drawResponseTimeChart() {
+            var data = google.visualization.arrayToDataTable(
+                    [
+                        ['Type', 'Resp. time'],
+                        [
+                            "AutoSuggests",
+                            26
+                        ],
+                        [
+                            "CSS",
+                            17
+                        ],
+                        [
+                            "Home Page",
+                            42
+                        ],
+                        [
+                            "Image (ICS)",
+                            210
+                        ],
+                        [
+                            "Image (apache)",
+                            8
+                        ],
+                        [
+                            "Image (tomcat)",
+                            11
+                        ],
+                        [
+                            "Javascripts",
+                            11
+                        ],
+                        [
+                            "Others",
+                            344
+                        ],
+                        [
+                            "Other Java actions",
+                            158
+                        ],
+                        [
+                            "Search Results",
+                            328
+                        ],
+                        [
+                            "Searches",
+                            260
+                        ],
+                        [
+                            "Shares",
+                            446
+                        ]
+                    ]
+            );
+
+            var options = {
+                title:'WPM Avg Response Time Breakdown',
+                hAxis: {title: 'Time (ms)'},
+                legend: 'none'
+            };
+
+            var chart = new google.visualization.BarChart(document.getElementById('response_time_breakdown'));
+            chart.draw(data, options);
+        }
+        function drawRequestTypeChart() {
+            var data = google.visualization.arrayToDataTable(
+                    [
+                        [
+                            "Type", "no. of requests"
+                        ],
+                        [
+                            "AutoSuggests",
+                            64404
+                        ],
+                        [
+                            "CSS",
+                            19787
+                        ],
+                        [
+                            "Home Page",
+                            48475
+                        ],
+                        [
+                            "Image (ICS)",
+                            67
+                        ],
+                        [
+                            "Image (apache)",
+                            55532
+                        ],
+                        [
+                            "Image (tomcat)",
+                            37351
+                        ],
+                        [
+                            "Javascripts",
+                            53665
+                        ],
+                        [
+                            "Others",
+                            5270
+                        ],
+                        [
+                            "Other Java actions",
+                            9272
+                        ],
+                        [
+                            "Search Results",
+                            9920
+                        ],
+                        [
+                            "Searches",
+                            11531
+                        ],
+                        [
+                            "Shares",
+                            16
+                        ]
+                    ]
+            );
+
+            var options = {
+                title:'WPM Request Type Breakdown',
+                sliceVisibilityThreshold: 1/100000
+            };
+
+            var chart = new google.visualization.PieChart(document.getElementById('request_type_breakdown'));
+            chart.draw(data, options);
+        }
+        function drawRequestSizeChart() {
+            var data = google.visualization.arrayToDataTable(
+                    [
+                        [   "Type", "bytes" ],
+                    	[
+                    		"AutoSuggests",
+                    		16971
+                    	],
+                    	[
+                    		"CSS",
+                    		6246
+                    	],
+                    	[
+                    		"Home Page",
+                    		6842
+                    	],
+                    	[
+                    		"Image (ICS)",
+                    		11448
+                    	],
+                    	[
+                    		"Image (apache)",
+                    		22141
+                    	],
+                    	[
+                    		"Image (tomcat)",
+                    		30064
+                    	],
+                    	[
+                    		"Javascripts",
+                    		15502
+                    	],
+                    	[
+                    		"Others",
+                    		20865
+                    	],
+                    	[
+                    		"Other Java actions",
+                    		9757
+                    	],
+                    	[
+                    		"Search Results",
+                    		6959
+                    	],
+                    	[
+                    		"Searches",
+                    		11212
+                    	],
+                    	[
+                    		"Shares",
+                    		1250
+                    	]
+                    ]
+            );
+
+            var options = {
+                title:'WPM Avg Response Size Breakdown',
+                legend: 'none'
+            };
+
+            var chart = new google.visualization.BarChart(document.getElementById('response_size_breakdown'));
+            chart.draw(data, options);
+        }
+        function drawSearchByGPSChart() {
+            var data = google.visualization.arrayToDataTable(
+                    [
+                        [
+                            "Type", "no. of requests"
+                        ],
+                        [
+                            "Using current location",
+                            7759
+                        ],
+                        [
+                            "Not using current location",
+                            1930
+                        ]
+                    ]
+            );
+
+            var options = {
+                title:'Percentage of WPM searches made with current location'
+            };
+
+            var chart = new google.visualization.PieChart(document.getElementById('search_by_gps'));
+            chart.draw(data, options);
+        }
+        function drawChart() {
+            drawRequestTypeChart();
+            drawResponseTimeChart();
+            drawRequestSizeChart();
+            drawSearchByGPSChart();
+        }
+    </script>
+</head>
+<body>
+<div id="request_type_breakdown" style="width: 900px; height: 500px;"></div>
+<div id="response_time_breakdown" style="width: 900px; height: 500px;"></div>
+<div id="response_size_breakdown" style="width: 900px; height: 500px;"></div>
+<div id="search_by_gps" style="width: 900px; height: 500px;"></div>
+</body>
+</html>
