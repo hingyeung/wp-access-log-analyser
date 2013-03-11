@@ -53,7 +53,8 @@ getRequestTypeData = function () {
         ]
     ];
 };
-
+// TODO change this to read from db using mongodb-rest
+// curl -H "Content-Type: application/json" 'http://localhost:3000/wp_access_log/chartData?qury=%7B%22chartName%22%3A%22requestTypeBreakdown%22%7D'
 function drawRequestTypeChart() {
     var data = google.visualization.arrayToDataTable(
         getRequestTypeData()
