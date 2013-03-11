@@ -5,10 +5,7 @@ getResponseTimeData = function () {
             "AutoSuggests",
             26
         ],
-        [
-            "CSS",
-            17
-        ],
+
         [
             "Home Page",
             42
@@ -17,18 +14,12 @@ getResponseTimeData = function () {
             "Image (ICS)",
             210
         ],
-        [
-            "Image (apache)",
-            8
-        ],
+
         [
             "Image (tomcat)",
             11
         ],
-        [
-            "Javascripts",
-            11
-        ],
+
         [
             "Others",
             344

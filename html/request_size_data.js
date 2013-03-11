@@ -5,10 +5,7 @@ getRequestSizeData = function() {
                         		"AutoSuggests",
                         		16971
                         	],
-                        	[
-                        		"CSS",
-                        		6246
-                        	],
+
                         	[
                         		"Home Page",
                         		6842
@@ -17,18 +14,12 @@ getRequestSizeData = function() {
                         		"Image (ICS)",
                         		11448
                         	],
-                        	[
-                        		"Image (apache)",
-                        		22141
-                        	],
+
                         	[
                         		"Image (tomcat)",
                         		30064
                         	],
-                        	[
-                        		"Javascripts",
-                        		15502
-                        	],
+
                         	[
                         		"Others",
                         		20865

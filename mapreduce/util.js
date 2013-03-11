@@ -6,17 +6,20 @@ db.system.js.save({_id:'getRequestType', value:function (request_uri_path) {
 
     var type;
     if (uri_path.match(/\.css$/)) {
-        type = 'CSS';
+//        type = 'CSS';
+        type = 'Apache';
     } else if (uri_path.match(/^\/v2\/web/)) {
         type = 'EMS';
     } else if (uri_path.match(/\.js$/)) {
-        type = 'Javascripts';
+//        type = 'Javascripts';
+        type = 'Apache';
     } else if (uri_path.match(/^\/ics\//)) {
         type = 'Image (ICS)';
     } else if (uri_path.match(/^\/feed\//)) {
         type = 'Feeds';
     } else if (uri_path.match(/\.png$|\.gif$|\.jpg$/)) {
-        type = 'Image (apache)';
+//        type = 'Image (apache)';
+        type = 'Apache';
     } else if (uri_path.match(/\.image$/)) {
         type = 'Image (tomcat)';
     } else if (uri_path.match(/doSearch.action$/)) {
