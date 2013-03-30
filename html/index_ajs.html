@@ -7,8 +7,10 @@
 <body ng-app="wala">
 <div ng-controller="PieChartCtrl">
     <button ng-click="getRequestTypeData('wp_access_log', 'prod')">click me</button>
-    <div chart chart-data="counts"></div>
-    {{counts}}
+    <pie-chart data="chartData" title="Request Types"
+                   width="500" height="320"
+                   select="selectRow(selectedRowIndex)"></pie-chart>
+    {{chartData}}
 </div>
 </body>
 </html>
