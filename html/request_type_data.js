@@ -4,45 +4,33 @@ getRequestTypeData = function () {
             "Type", "no. of requests"
         ],
 
-        	[
+        [
         		"AutoSuggests",
-        		64404
-        	],
-        	[
-        		"Feeds",
-        		144
+        		53613
         	],
         	[
         		"Home Page",
-        		48475
-        	],
-        	[
-        		"Image (ICS)",
-        		67
+        		54978
         	],
         	[
         		"Image (tomcat)",
-        		37351
+        		465
         	],
         	[
         		"Other Java actions",
-        		9128
+        		36834
         	],
         	[
         		"Others",
-        		5270
+        		14752
         	],
         	[
         		"Search Results",
-        		9920
+        		7428
         	],
         	[
         		"Searches",
-        		11531
-        	],
-        	[
-        		"Shares",
-        		16
+        		55851
         	]
     ];
 };

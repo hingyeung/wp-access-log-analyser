@@ -1,45 +1,34 @@
 getRequestSizeData = function() {
     return [
                             [   "Type", "bytes" ],
-                        	[
-                        		"AutoSuggests",
-                        		16971
-                        	],
-
-                        	[
-                        		"Home Page",
-                        		6842
-                        	],
-                        	[
-                        		"Image (ICS)",
-                        		11448
-                        	],
-
-                        	[
-                        		"Image (tomcat)",
-                        		30064
-                        	],
-
-                        	[
-                        		"Others",
-                        		20865
-                        	],
-                        	[
-                        		"Other Java actions",
-                        		9757
-                        	],
-                        	[
-                        		"Search Results",
-                        		6959
-                        	],
-                        	[
-                        		"Searches",
-                        		11212
-                        	],
-                        	[
-                        		"Shares",
-                        		1250
-                        	]
+        [
+        		"AutoSuggests",
+        		1261197
+        	],
+        	[
+        		"Home Page",
+        		1253804
+        	],
+        	[
+        		"Image (tomcat)",
+        		1206957
+        	],
+        	[
+        		"Other Java actions",
+        		1242148
+        	],
+        	[
+        		"Others",
+        		1191571
+        	],
+        	[
+        		"Search Results",
+        		1199174
+        	],
+        	[
+        		"Searches",
+        		1248915
+        	]
                         ];
 };
 

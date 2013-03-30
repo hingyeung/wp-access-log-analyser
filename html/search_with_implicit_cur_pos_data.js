@@ -3,14 +3,7 @@ getSearchWithImplicitCurPosData = function () {
         [
             "Type", "no. of requests"
         ],
-        [
-            "With lat/lng",
-            7759
-        ],
-        [
-            "Without lat/lng",
-            1930
-        ]
+        [ "With lat/lng", 53887 ], [ "Without lat/lng", 1964 ]
     ];
 };
 

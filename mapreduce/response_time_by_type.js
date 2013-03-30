@@ -34,7 +34,7 @@ var mapReduceToNestArray = function(mapReduceResult) {
 }
 
 mapReduceToNestArray(
-    db.prod.mapReduce(map, reduce, {finalize: finalize,  out:{inline:1}, query: {duration: {$exists:1}, dest_host:'mobile.whitepages.com.au'}})
+    db.prod.mapReduce(map, reduce, {finalize: finalize,  out:{inline:1}, query: {duration: {$exists:1}, dest_host:'stageb-mobile.whitepages.com.au'}})
 );
 
 // debug functions

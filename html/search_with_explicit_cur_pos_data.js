@@ -3,14 +3,7 @@ getSearchWithExplicitCurPosData = function () {
         [
             "Type", "no. of requests"
         ],
-        [
-            "Current location",
-            971
-        ],
-        [
-            "Other locations",
-            8718
-        ]
+        [ "Current location", 0 ], [ "Other locations", 55851 ]
     ];
 };
 

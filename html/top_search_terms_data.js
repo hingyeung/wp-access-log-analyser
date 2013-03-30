@@ -4,45 +4,45 @@ getTopSearchTermsData = function () {
             "Search Term", "no. of requests"
         ],
         [
-            "ato, nsw",
-            48
-        ],
-        [
-            "telstra corporation limited, vic",
-            48
-        ],
-        [
-            "telstra business, Port Macquarie, NSW",
-            33
-        ],
-        [
-            "Goulburn Valley Grammar School, Shepparton Region, VIC",
-            12
-        ],
-        [
-            "Bigriver Supermarket, Waikerie SA",
-            10
-        ],
-        [
-            "Independent Locksmiths & Security, Granville NSW",
-            9
-        ],
-        [
-            "Ausfuel, gladstone",
-            7
-        ],
-        [
-            "Brisbane Airport Parking, Brisbane QLD",
-            7
-        ],
-        [
-            "Independent Locksmiths & Security, Parramatta NSW",
-            7
-        ],
-        [
-            "walkers arms hotel, Adelaide",
-            7
-        ]
+        		"botanical gardens, NSW",
+        		1206
+        	],
+        	[
+        		"botanical gardens, VIC",
+        		794
+        	],
+        	[
+        		"botanical gardens, QLD",
+        		538
+        	],
+        	[
+        		"zielke desgin drafting pty ltd, ",
+        		336
+        	],
+        	[
+        		"chemist, NSW",
+        		326
+        	],
+        	[
+        		"botanical gardens, WA",
+        		314
+        	],
+        	[
+        		"N.Hemelaar, WA",
+        		300
+        	],
+        	[
+        		"Chan, NSW",
+        		274
+        	],
+        	[
+        		"pharmacy, NSW",
+        		272
+        	],
+        	[
+        		"house rental agents, NSW",
+        		264
+        	]
     ];
 };
 

@@ -2,44 +2,33 @@ getResponseTimeData = function () {
     return [
         ['Type', 'Resp. time'],
         [
-            "AutoSuggests",
-            26
-        ],
-
-        [
-            "Home Page",
-            42
-        ],
-        [
-            "Image (ICS)",
-            210
-        ],
-
-        [
-            "Image (tomcat)",
-            11
-        ],
-
-        [
-            "Others",
-            344
-        ],
-        [
-            "Other Java actions",
-            158
-        ],
-        [
-            "Search Results",
-            328
-        ],
-        [
-            "Searches",
-            260
-        ],
-        [
-            "Shares",
-            446
-        ]
+        		"AutoSuggests",
+        		32
+        	],
+        	[
+        		"Home Page",
+        		26
+        	],
+        	[
+        		"Image (tomcat)",
+        		15
+        	],
+        	[
+        		"Other Java actions",
+        		157
+        	],
+        	[
+        		"Others",
+        		5
+        	],
+        	[
+        		"Search Results",
+        		157
+        	],
+        	[
+        		"Searches",
+        		198
+        	]
     ];
 };
 

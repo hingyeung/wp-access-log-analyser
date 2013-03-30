@@ -32,9 +32,9 @@ var mapReduceToChartData = function(mapReduceResult, chartName) {
     db.chartData.update({chartName: chartName}, {$set: {data: data, chartType: 'pie'}}, {upsert: true});
 }
 
-mapReduceToNestArray(db.prod.mapReduce(map, reduce, {out:{inline:1}, query: {dest_host:'mobile.whitepages.com.au'}}));
+mapReduceToNestArray(db.prod.mapReduce(map, reduce, {out:{inline:1}, query: {dest_host:'stageb-mobile.whitepages.com.au'}}));
 
-//mapReduceToChartData(db.prod.mapReduce(map, reduce, {out:{inline:1}, query: {dest_host:'mobile.whitepages.com.au'}}), 'requestTypeBreakdown');
+mapReduceToChartData(db.prod.mapReduce(map, reduce, {out:{inline:1}, query: {dest_host:'stageb-mobile.whitepages.com.au'}}), 'requestTypeBreakdown');
 
 
 //
