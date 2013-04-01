@@ -43,15 +43,18 @@ var getRequestTypeTag = function (request_uri_path) {
     return type;
 };
 
-db.stageb.find().forEach(function(doc) {
+var environment = 'prod';
+var coll = db.getCollection(environment);
+
+coll.find().forEach(function(doc) {
     var tags = getRequestTypeTag(doc.uri_path);
 //    print(doc.uri_path);
 //    print(tags);
-    db.stageb.update({_id: doc._id, wpol_tags:{$exists: false}}, {$pushAll: {"wpol_tags": tags}});
+    coll.update({_id: doc._id, wpol_tags:{$exists: false}}, {$pushAll: {"wpol_tags": tags}});
 });
 
 // remove wp_tags from all docs
-db.prod.update({wpol_tags:{$exists:true}}, {$unset: {wpol_tags:1}}, false, true)
+coll.update({wpol_tags:{$exists:true}}, {$unset: {wpol_tags:1}}, false, true);
 
 // count docs with wp_tags
-db.prod.find({wpol_tags:{$exists:true}}).count()
+coll.find({wpol_tags:{$exists:true}}).count();

@@ -1,8 +1,4 @@
-// initialise angular after gapi is loaded
-google.setOnLoadCallback(function () {
-    angular.bootstrap(document.body, ['wala']);
-});
-google.load('visualization', '1', {packages:['corechart']});
+
 
 angular.module('wala.services', []). // module name
     factory(
@@ -97,14 +93,40 @@ angular.module('wala', ['wala.services']).
         }
       };
     }).
+    // getting angularjs binding to work with dynamic value.
+    // (in this case, jQuery updates the input field and normally angularjs
+    //  wouldn't know about it)
+    // http://stackoverflow.com/questions/11873627/angularjs-ng-model-binding-not-updating-with-dynamic-values
+    // http://fiddle.jshell.net/agvTz/39/
+    directive('datetimepicker', ['$parse', function($parse) {
+        return {
+            restrict: "A",
+            link: function(scope, element, attrs) {
+                //using $parse instead of scope[attrs.datetimepicker] for cases
+                //where attrs.datetimepicker is 'foo.bar.lol'
+                parsed = $parse(attrs.datetimepicker);
+                $(element).datetimepicker().on('changeDate', function(event) {
+                    console.log(event.date.valueOf());
+                    scope.$apply(function(){
+                        parsed.assign(scope, event.date.valueOf());
+                    });
+                });
+            }
+        }
+    }]).
     // this controller depends on ChartService, which is defined in wala.services module
     // the dependencies are then passed to the controller function
     controller('PieChartCtrl', ['$scope', 'ChartService', function ($scope, chartService) {
         var serviceUrl = 'http://localhost:4567';
+
+        $scope.fromTimestamp = null;
+        $scope.toTimestamp = null;
         $scope.chartData = [];
+        $scope.environment = 'prod';
 
         $scope.getRequestTypeData = function (db, coll) {
-            console.log('calling getRequestTypeData()');
+            console.log($scope.fromTimestamp);
+            console.log(new Date($scope.fromTimestamp));
             var requestTypes = ['search', 'result', 'autoSuggest', 'homepage'];
             for (var i = 0; i < requestTypes.length; i++) {
                 var promise = chartService.getCount(db, coll, '{"wpol_tags": "' + requestTypes[i] + '"}');
@@ -117,24 +139,7 @@ angular.module('wala', ['wala.services']).
             }
         };
 
-        $scope.dummyCallToController = function() {
-            console.log('HELLO dummy');
-            return 'HELLO dummy';
+        $scope.foo = function(s) {
+            console.log(s);
         }
     }]);
-
-//var PieChartCtrl = ['$scope', 'ChartService', function($scope, ChartService) {
-//    var serviceUrl = 'http://localhost:4567';
-//    $scope.counts = {};
-//
-//    $scope.getRequestTypeData = function(db, coll) {
-//        var requestTypes = ['search', 'result', 'autoSuggest', 'homepage'];
-//        for (var i = 0; i < requestTypes.length; i++) {
-//            var promise = ChartService.getCount(db, coll, '{"wpol_tags": "' + requestTypes[i] + '"}');
-//            // handling closure
-//            promise.then(function(requestType) {
-//                return function(resp) { $scope.counts[requestType] = resp.data; }
-//            }(requestTypes[i]));
-//        }
-//    }
-//}];
