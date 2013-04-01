@@ -98,16 +98,32 @@ angular.module('wala', ['wala.services']).
     //  wouldn't know about it)
     // http://stackoverflow.com/questions/11873627/angularjs-ng-model-binding-not-updating-with-dynamic-values
     // http://fiddle.jshell.net/agvTz/39/
-    directive('datetimepicker', ['$parse', function($parse) {
+    directive('fromdatetimepicker', ['$parse', function($parse) {
         return {
             restrict: "A",
             link: function(scope, element, attrs) {
-                //using $parse instead of scope[attrs.datetimepicker] for cases
-                //where attrs.datetimepicker is 'foo.bar.lol'
-                parsed = $parse(attrs.datetimepicker);
+                //using $parse instead of scope[attrs.fromdatetimepicker] for cases
+                //where attrs.fromdatetimepicker is 'foo.bar.lol'
+                var parsed = $parse(attrs.fromdatetimepicker);
                 $(element).datetimepicker().on('changeDate', function(event) {
-                    console.log(event.date.valueOf());
                     scope.$apply(function(){
+                        console.log(event.date.valueOf());
+                        parsed.assign(scope, event.date.valueOf());
+                    });
+                });
+            }
+        }
+    }]).
+    directive('todatetimepicker', ['$parse', function($parse) {
+        return {
+            restrict: "A",
+            link: function(scope, element, attrs) {
+                //using $parse instead of scope[attrs.todatetimepicker] for cases
+                //where attrs.todatetimepicker is 'foo.bar.lol'
+                var parsed = $parse(attrs.todatetimepicker);
+                $(element).datetimepicker().on('changeDate', function(event) {
+                    scope.$apply(function(){
+                        console.log(event.date.valueOf());
                         parsed.assign(scope, event.date.valueOf());
                     });
                 });
@@ -119,8 +135,8 @@ angular.module('wala', ['wala.services']).
     controller('PieChartCtrl', ['$scope', 'ChartService', function ($scope, chartService) {
         var serviceUrl = 'http://localhost:4567';
 
-        $scope.fromTimestamp = null;
-        $scope.toTimestamp = null;
+        $scope.fromTimestamp = 0;
+        $scope.toTimestamp = 0;
         $scope.chartData = [];
         $scope.environment = 'prod';
 
@@ -129,7 +145,12 @@ angular.module('wala', ['wala.services']).
             console.log(new Date($scope.fromTimestamp));
             var requestTypes = ['search', 'result', 'autoSuggest', 'homepage'];
             for (var i = 0; i < requestTypes.length; i++) {
-                var promise = chartService.getCount(db, coll, {"wpol_tags": requestTypes[i]});
+                var query = {
+                    "timestamp":  {"$gte": $scope.fromTimestamp / 1000, "$lt":$scope.toTimestamp / 1000},
+                    "wpol_tags": requestTypes[i]
+                };
+                console.log(JSON.stringify(query));
+                var promise = chartService.getCount(db, coll, query);
                 // handling closure
                 promise.then(function (requestType) {
                     return function (resp) {

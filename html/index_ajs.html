@@ -6,15 +6,18 @@
 </head>
 <!-- no need to use ng-app attribute here as we are bootstrapping AngularJS after Google Chart API is loaded -->
 <body ng-controller="PieChartCtrl">
+
     <form>
         <div class="input-append date form_datetime">
-            <input size="16" type="text" value="" readonly datetimepicker="fromTimestamp">
+            <input size="16" type="text" value="" readonly fromdatetimepicker="fromTimestamp">
             <span class="add-on"><i class="icon-th"></i></span>
         </div>
+        FROM {{fromTimestamp}}
         <div class="input-append date form_datetime">
-            <input size="16" type="text" value="" readonly datetimepicker="toTimestamp">
+            <input size="16" type="text" value="" readonly todatetimepicker="toTimestamp">
             <span class="add-on"><i class="icon-th"></i></span>
         </div>
+        TO {{toTimestamp}}
         <select ng-model="environment">
             <option value="prod">Production</option>
             <option value="stagea">StageA</option>
