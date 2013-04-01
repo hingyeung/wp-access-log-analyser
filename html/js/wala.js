@@ -10,7 +10,7 @@ angular.module('wala.services', []). // module name
                     serviceUrl: 'http://localhost:4567',
 
                     getCount: function(db, coll, query) {   // function in this service
-                        return $http.get(this.serviceUrl + '/count/' + db + '/' + coll + '?query=' + encodeURI(query));
+                        return $http.get(this.serviceUrl + '/count/' + db + '/' + coll + '?query=' + encodeURI(JSON.stringify(query)));
                     }
                 };
 
@@ -129,7 +129,7 @@ angular.module('wala', ['wala.services']).
             console.log(new Date($scope.fromTimestamp));
             var requestTypes = ['search', 'result', 'autoSuggest', 'homepage'];
             for (var i = 0; i < requestTypes.length; i++) {
-                var promise = chartService.getCount(db, coll, '{"wpol_tags": "' + requestTypes[i] + '"}');
+                var promise = chartService.getCount(db, coll, {"wpol_tags": requestTypes[i]});
                 // handling closure
                 promise.then(function (requestType) {
                     return function (resp) {
@@ -138,8 +138,4 @@ angular.module('wala', ['wala.services']).
                 }(requestTypes[i]));
             }
         };
-
-        $scope.foo = function(s) {
-            console.log(s);
-        }
     }]);
