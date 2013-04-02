@@ -135,18 +135,26 @@ angular.module('wala', ['wala.services']).
     controller('PieChartCtrl', ['$scope', 'ChartService', function ($scope, chartService) {
         var serviceUrl = 'http://localhost:4567';
 
+        var unixTimestampToTimestampWithTZOffsetInSecs = function(unixTimestamp) {
+            var timestampInSecs = unixTimestamp / 1000;
+            var timezoneOffsetInSecs = (new Date()).getTimezoneOffset() * 60;
+            return timestampInSecs + timezoneOffsetInSecs;  // convert back to GMT
+        }
+
         $scope.fromTimestamp = 0;
         $scope.toTimestamp = 0;
         $scope.chartData = [];
         $scope.environment = 'prod';
 
         $scope.getRequestTypeData = function (db, coll) {
-            console.log($scope.fromTimestamp);
-            console.log(new Date($scope.fromTimestamp));
+            $scope.chartData = [];
             var requestTypes = ['search', 'result', 'autoSuggest', 'homepage'];
             for (var i = 0; i < requestTypes.length; i++) {
                 var query = {
-                    "timestamp":  {"$gte": $scope.fromTimestamp / 1000, "$lt":$scope.toTimestamp / 1000},
+                    "timestamp":  {
+                        "$gte": unixTimestampToTimestampWithTZOffsetInSecs($scope.fromTimestamp),
+                        "$lt": unixTimestampToTimestampWithTZOffsetInSecs($scope.toTimestamp)
+                    },
                     "wpol_tags": requestTypes[i]
                 };
                 console.log(JSON.stringify(query));
@@ -159,4 +167,5 @@ angular.module('wala', ['wala.services']).
                 }(requestTypes[i]));
             }
         };
+
     }]);
