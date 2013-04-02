@@ -53,6 +53,9 @@ coll.find().forEach(function(doc) {
     coll.update({_id: doc._id, wpol_tags:{$exists: false}}, {$pushAll: {"wpol_tags": tags}});
 });
 
+// create index to speed up pie chart data search
+coll.ensureIndex({timestamp:1,wpol_tags:1})
+
 // remove wp_tags from all docs
 coll.update({wpol_tags:{$exists:true}}, {$unset: {wpol_tags:1}}, false, true);
 
