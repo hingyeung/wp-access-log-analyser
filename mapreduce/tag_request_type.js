@@ -1,43 +1,57 @@
-
-var getRequestTypeTag = function (request_uri_path) {
+var cleanupUriPath = function(request_uri_path) {
     var uri_path = request_uri_path;
     if (request_uri_path.indexOf(';') != -1) {
-        uri_path = request_uri_path.substring(0, request_uri_path.indexOf(';'));
+            uri_path = request_uri_path.substring(0, request_uri_path.indexOf(';'));
+        }
+    return uri_path;
+}
+
+var getRequestDestination = function (request_uri_path) {
+    var dest = 'tomcat', uri_path = cleanupUriPath(request_uri_path);
+
+    var apachePatterns = [
+        /\.css$/, /\.js$/, /\.png$|\.gif$|\.jpg$/
+    ];
+
+    for (var i = 0; i < apachePatterns.length; i++) {
+        if (uri_path.match(apachePatterns[i])) {
+            dest = 'apache';
+            break;
+        }
     }
 
-    var type;
-    if (uri_path.match(/\.css$/)) {
-        type = ['css','apache'];
-    } else if (uri_path.match(/^\/v2\/web/)) {
-        type = ['ems', 'external'];
-    } else if (uri_path.match(/\.js$/)) {
-//        type = 'Javascripts';
-        type = ['apache', 'javascript'];
-    } else if (uri_path.match(/^\/ics\//)) {
-        type = ['image', 'ics'];
-    } else if (uri_path.match(/^\/feed\//)) {
-        type = ['feeds'];
-    } else if (uri_path.match(/\.png$|\.gif$|\.jpg$/)) {
-//        type = 'Image (apache)';
-        type = ['apache', 'image'];
-    } else if (uri_path.match(/\.image$/)) {
-        type = ['image', 'tomcat'];
-    } else if (uri_path.match(/doSearch.action$/)) {
-        type = ['search', 'tomcat'];
-    } else if (uri_path.match(/^\/listing\//)) {
-        type = ['share', 'tomcat'];
-    } else if (uri_path.match(/^\/(business|government|residential)-listing|showCaption.action$|captionLineListingDetails.action$/)) {
-        type = ['result', 'tomcat'];
-    } else if (uri_path.match(/urlProxy.action$/)) {
-        type = ['autoSuggest', 'tomcat'];
-    } else if (uri_path.match(/\.action$/)) {
-        type = ['otherbackend', 'tomcat'];
-    } else if (uri_path.match(/^\/+$/)) {
-        type = ['homepage', 'tomcat'];
-    } else {
-        // uncomment the following line if you want to know what are in the "others" category
-//            type = uri_path;
-        type = ['others'];
+    return dest;
+}
+
+var getRequestTypeTag = function (request_uri_path) {
+    var type = null, uri_path = cleanupUriPath(request_uri_path);
+
+    var patternMap = [
+        [/\.css$/, 'css'],
+        [/\.js$/, 'javascript'],
+        [/^\/ics\//, 'image'],
+        [/^\/feed\//, 'feed'],
+        [/\.png$|\.gif$|\.jpg$/, 'image'],
+        [/\.image$/, 'image'],
+        [/doSearch.action$/, 'search'],
+        [/^\/listing\//, 'share'],
+        [/^\/(business|government|residential)-listing|showCaption.action$|captionLineListingDetails.action$/, 'result'],
+        [/urlProxy.action$/, 'autoSuggest'],
+        [/\.action$/, 'otherbackend'],
+        [/^\/+$/, 'homepage'],
+        [/\/home.action$/, 'homepage'],
+        [/^\/ics\//, 'ics']
+    ];
+
+    for (var i = 0; i < patternMap.length; i++) {
+        if (uri_path.match(patternMap[i][0])) {
+            type = patternMap[i][1];
+            break;
+        }
+    }
+
+    if (!type) {
+        type = 'others';
     }
 
     return type;
@@ -47,17 +61,19 @@ var environment = 'prod';
 var coll = db.getCollection(environment);
 
 coll.find().forEach(function(doc) {
-    var tags = getRequestTypeTag(doc.uri_path);
-//    print(doc.uri_path);
-//    print(tags);
-    coll.update({_id: doc._id, wp_request_type:{$exists: false}}, {$pushAll: {"wp_request_type": tags}});
+    var requestType = getRequestTypeTag(doc.uri_path);
+    coll.update({_id: doc._id, wp_request_type:{$exists: false}}, {$push: {"wp_request_type": requestType}});
+    var dest = getRequestDestination(doc.uri_path);
+    coll.update({_id: doc._id, wp_request_dest:{$exists: false}}, {$push: {"wp_request_dest": dest}});
 });
 
 // create index to speed up pie chart data search
-coll.ensureIndex({timestamp:1,wp_request_type:1})
+coll.ensureIndex({timestamp:1,wp_request_type:1});
+coll.ensureIndex({timestamp:1,wp_request_dest:1});
 
-// remove wp_tags from all docs
+// remove wp tags from all docs
 coll.update({wp_request_type:{$exists:true}}, {$unset: {wp_request_type:1}}, false, true);
+coll.update({wp_request_dest:{$exists:true}}, {$unset: {wp_request_dest:1}}, false, true);
 
 // count docs with wp_tags
 coll.find({wp_request_type:{$exists:true}}).count();
