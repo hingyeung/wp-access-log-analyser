@@ -98,29 +98,13 @@ angular.module('wala', ['wala.services']).
     //  wouldn't know about it)
     // http://stackoverflow.com/questions/11873627/angularjs-ng-model-binding-not-updating-with-dynamic-values
     // http://fiddle.jshell.net/agvTz/39/
-    directive('fromdatetimepicker', ['$parse', function($parse) {
+    directive('datetimepicker', ['$parse', function($parse) {
         return {
             restrict: "A",
             link: function(scope, element, attrs) {
-                //using $parse instead of scope[attrs.fromdatetimepicker] for cases
-                //where attrs.fromdatetimepicker is 'foo.bar.lol'
-                var parsed = $parse(attrs.fromdatetimepicker);
-                $(element).parent().datetimepicker().on('changeDate', function(event) {
-                    scope.$apply(function(){
-                        console.log(event.date.valueOf());
-                        parsed.assign(scope, event.date.valueOf());
-                    });
-                });
-            }
-        }
-    }]).
-    directive('todatetimepicker', ['$parse', function($parse) {
-        return {
-            restrict: "A",
-            link: function(scope, element, attrs) {
-                //using $parse instead of scope[attrs.todatetimepicker] for cases
-                //where attrs.todatetimepicker is 'foo.bar.lol'
-                var parsed = $parse(attrs.todatetimepicker);
+                //using $parse instead of scope[attrs.datetimepicker] for cases
+                //where attrs.datetimepicker is 'foo.bar.lol'
+                var parsed = $parse(attrs.datetimepicker);
                 $(element).parent().datetimepicker().on('changeDate', function(event) {
                     scope.$apply(function(){
                         console.log(event.date.valueOf());
