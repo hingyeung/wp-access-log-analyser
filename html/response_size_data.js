@@ -3,31 +3,27 @@ getRequestSizeData = function() {
                             [   "Type", "bytes" ],
         [
         		"AutoSuggests",
-        		1261197
+        		1283635
         	],
         	[
         		"Home Page",
-        		1253804
+        		1286521
         	],
         	[
         		"Image (tomcat)",
-        		1206957
+        		1211568
         	],
         	[
         		"Other Java actions",
-        		1242148
-        	],
-        	[
-        		"Others",
-        		1191571
+        		1270092
         	],
         	[
         		"Search Results",
-        		1199174
+        		1251295
         	],
         	[
         		"Searches",
-        		1248915
+        		1283677
         	]
                         ];
 };
