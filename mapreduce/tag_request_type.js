@@ -50,14 +50,14 @@ coll.find().forEach(function(doc) {
     var tags = getRequestTypeTag(doc.uri_path);
 //    print(doc.uri_path);
 //    print(tags);
-    coll.update({_id: doc._id, wpol_tags:{$exists: false}}, {$pushAll: {"wpol_tags": tags}});
+    coll.update({_id: doc._id, wp_request_type:{$exists: false}}, {$pushAll: {"wp_request_type": tags}});
 });
 
 // create index to speed up pie chart data search
-coll.ensureIndex({timestamp:1,wpol_tags:1})
+coll.ensureIndex({timestamp:1,wp_request_type:1})
 
 // remove wp_tags from all docs
-coll.update({wpol_tags:{$exists:true}}, {$unset: {wpol_tags:1}}, false, true);
+coll.update({wp_request_type:{$exists:true}}, {$unset: {wp_request_type:1}}, false, true);
 
 // count docs with wp_tags
-coll.find({wpol_tags:{$exists:true}}).count();
+coll.find({wp_request_type:{$exists:true}}).count();

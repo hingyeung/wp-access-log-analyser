@@ -139,7 +139,7 @@ angular.module('wala', ['wala.services']).
                         "$gte": unixTimestampToTimestampWithTZOffsetInSecs($scope.fromTimestamp),
                         "$lt": unixTimestampToTimestampWithTZOffsetInSecs($scope.toTimestamp)
                     },
-                    "wpol_tags": requestTypes[i]
+                    "wp_request_type": requestTypes[i]
                 };
                 console.log(JSON.stringify(query));
                 var promise = chartService.getCount(db, coll, query);
