@@ -105,7 +105,7 @@ angular.module('wala', ['wala.services']).
                 //using $parse instead of scope[attrs.fromdatetimepicker] for cases
                 //where attrs.fromdatetimepicker is 'foo.bar.lol'
                 var parsed = $parse(attrs.fromdatetimepicker);
-                $(element).datetimepicker().on('changeDate', function(event) {
+                $(element).parent().datetimepicker().on('changeDate', function(event) {
                     scope.$apply(function(){
                         console.log(event.date.valueOf());
                         parsed.assign(scope, event.date.valueOf());
@@ -121,7 +121,7 @@ angular.module('wala', ['wala.services']).
                 //using $parse instead of scope[attrs.todatetimepicker] for cases
                 //where attrs.todatetimepicker is 'foo.bar.lol'
                 var parsed = $parse(attrs.todatetimepicker);
-                $(element).datetimepicker().on('changeDate', function(event) {
+                $(element).parent().datetimepicker().on('changeDate', function(event) {
                     scope.$apply(function(){
                         console.log(event.date.valueOf());
                         parsed.assign(scope, event.date.valueOf());

@@ -8,16 +8,14 @@
 <body ng-controller="PieChartCtrl">
 
     <form>
-        <div class="input-append date form_datetime">
-            <input size="16" type="text" value="" readonly fromdatetimepicker="fromTimestamp">
+        <div class="input-append date" data-date="" data-date-format="yyyy-mm-dd hh:ii">
+            <input class="span2" size="16" type="text" readonly fromdatetimepicker="fromTimestamp">
             <span class="add-on"><i class="icon-th"></i></span>
         </div>
-        FROM {{fromTimestamp}}
-        <div class="input-append date form_datetime">
-            <input size="16" type="text" value="" readonly todatetimepicker="toTimestamp">
+        <div class="input-append date" data-date="" data-date-format="yyyy-mm-dd hh:ii">
+            <input class="span2" size="16" type="text" readonly todatetimepicker="toTimestamp">
             <span class="add-on"><i class="icon-th"></i></span>
         </div>
-        TO {{toTimestamp}}
         <select ng-model="environment">
             <option value="prod">Production</option>
             <option value="stagea">StageA</option>
