@@ -58,6 +58,10 @@ const GEOCODE = [
 ];
 
 var categorise = function (categoryDef, input, defaultCategory) {
+    if (typeof(input) != 'string') {
+        return [];
+    }
+
     var type = [];
 
     for (var i = 0; i < categoryDef.length; i++) {
@@ -98,8 +102,10 @@ coll.find().forEach(function(doc) {
     var geocode = categorise(GEOCODE, doc.uri_query, null);
     coll.update({_id: doc._id, wp_geocode:{$exists: false}}, {$pushAll: {"wp_geocode": geocode}});
 
-    var searchTerms = categorise(SEARCH_TERM_MAP, doc.uri_query, null);
-    coll.update({_id: doc._id, wp_search_terms:{$exists: false}}, {$pushAll: {"wp_search_terms": searchTerms}});
+    if (doc.uri_path.match(/doSearch.action$/)) {
+        var searchTerms = categorise(SEARCH_TERM_MAP, doc.uri_query, null);
+        coll.update({_id: doc._id, wp_search_terms:{$exists: false}}, {$pushAll: {"wp_search_terms": searchTerms}});
+    }
 });
 
 var tagTypes = ["wp_request_types", "wp_request_dests", "wp_device_types", "wp_request_params", "geocode"];
