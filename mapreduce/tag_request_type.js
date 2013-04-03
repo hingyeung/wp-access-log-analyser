@@ -73,9 +73,8 @@ var categorise = function (categoryDef, input, defaultCategory) {
             }
         }
     }
-
-    if (type.length == 0 && !defaultCategory) {
-        return defaultCategory;
+    if (type.length == 0 && defaultCategory) {
+        return [defaultCategory];
     }
 
     return type;
