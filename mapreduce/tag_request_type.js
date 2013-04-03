@@ -101,7 +101,7 @@ coll.find().forEach(function(doc) {
     var geocode = categorise(GEOCODE, doc.uri_query, null);
     coll.update({_id: doc._id, wp_geocode:{$exists: false}}, {$pushAll: {"wp_geocode": geocode}});
 
-    if (doc.uri_path.match(/doSearch.action$/)) {
+    if (uriPath.match(/doSearch.action$/)) {
         var searchTerms = categorise(SEARCH_TERM_MAP, doc.uri_query, null);
         coll.update({_id: doc._id, wp_search_terms:{$exists: false}}, {$pushAll: {"wp_search_terms": searchTerms}});
     }
