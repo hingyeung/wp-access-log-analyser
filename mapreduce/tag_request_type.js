@@ -6,60 +6,31 @@ var cleanupUriPath = function(request_uri_path) {
     return uri_path;
 }
 
-var getRequestDestination = function (request_uri_path) {
-    var dest = 'tomcat', uri_path = cleanupUriPath(request_uri_path);
+const DESTINATION_MAP = [
+    [/\.css$/, ['apache']],
+    [/\.js$/, ['apache']],
+    [/\.png$|\.gif$|\.jpg$/, ['apache']]
+];
 
-    var apachePatterns = [
-        /\.css$/, /\.js$/, /\.png$|\.gif$|\.jpg$/
+const REQUEST_TYPE_MAP = [
+        [/\.css$/, ['css']],
+        [/\.js$/, ['javascript']],
+        [/^\/ics\//, ['image']],
+        [/^\/feed\//, ['feed']],
+        [/\.png$|\.gif$|\.jpg$/, ['image']],
+        [/\.image$/, ['image']],
+        [/doSearch.action$/, ['search']],
+        [/^\/listing\//, ['share']],
+        [/^\/(business|government|residential)-listing|showCaption.action$|captionLineListingDetails.action$/, ['result']],
+        [/urlProxy.action$/, ['autoSuggest']],
+        [/\.action$/, ['backend']],
+        [/^\/+$/, ['homepage']],
+        [/\/home.action$/, ['homepage']],
+        [/^\/ics\//, ['ics']],
+        [/^\/cp\//, ['cp']]
     ];
 
-    for (var i = 0; i < apachePatterns.length; i++) {
-        if (uri_path.match(apachePatterns[i])) {
-            dest = 'apache';
-            break;
-        }
-    }
-
-    return dest;
-}
-
-var getRequestTypeTag = function (request_uri_path) {
-    var type = null, uri_path = cleanupUriPath(request_uri_path);
-
-    var patternMap = [
-        [/\.css$/, 'css'],
-        [/\.js$/, 'javascript'],
-        [/^\/ics\//, 'image'],
-        [/^\/feed\//, 'feed'],
-        [/\.png$|\.gif$|\.jpg$/, 'image'],
-        [/\.image$/, 'image'],
-        [/doSearch.action$/, 'search'],
-        [/^\/listing\//, 'share'],
-        [/^\/(business|government|residential)-listing|showCaption.action$|captionLineListingDetails.action$/, 'result'],
-        [/urlProxy.action$/, 'autoSuggest'],
-        [/\.action$/, 'otherbackend'],
-        [/^\/+$/, 'homepage'],
-        [/\/home.action$/, 'homepage'],
-        [/^\/ics\//, 'ics']
-    ];
-
-    for (var i = 0; i < patternMap.length; i++) {
-        if (uri_path.match(patternMap[i][0])) {
-            type = patternMap[i][1];
-            break;
-        }
-    }
-
-    if (!type) {
-        type = 'others';
-    }
-
-    return type;
-};
-
-var getDeviceType = function(user_agent) {
-    var type = [],
-        deviceMap = [
+const DEVICE_MAP = [
             [/iPhone;.+OS (\d+_\d+_\d+)/, ['iphone','ios']],
             [/iPad;.+OS (\d+_\d+_\d+)/, ['ipad', 'ios']],
             [/iPod;.+OS (\d+_\d+_\d+)/, ['ipod', 'ios']],
@@ -70,14 +41,21 @@ var getDeviceType = function(user_agent) {
             [/MSIE (\d+\.\d+);/, ['msie']]
         ];
 
-    for (var i = 0; i < deviceMap.length; i++) {
-        var matches = user_agent.match(deviceMap[i][0]);
+var categorise = function (categoryDef, input, defaultCategory) {
+    var type = [];
+
+    for (var i = 0; i < categoryDef.length; i++) {
+        var matches = input.match(categoryDef[i][0]);
         if (matches) {
-            type = type.concat(deviceMap[i][1]);
+            type = type.concat(categoryDef[i][1]);
             for (var j = 1; j < matches.length; j++) {
                 type.push(matches[j]);
             }
         }
+    }
+
+    if (type.length == 0) {
+        return defaultCategory;
     }
 
     return type;
@@ -87,20 +65,27 @@ var environment = 'prod';
 var coll = db.getCollection(environment);
 
 coll.find().forEach(function(doc) {
-    var requestType = getRequestTypeTag(doc.uri_path);
-    coll.update({_id: doc._id, wp_request_type:{$exists: false}}, {$push: {"wp_request_type": requestType}});
+    var uriPath = cleanupUriPath(doc.uri_path);
 
-    var dest = getRequestDestination(doc.uri_path);
-    coll.update({_id: doc._id, wp_request_dest:{$exists: false}}, {$push: {"wp_request_dest": dest}});
+    var requestType = categorise(REQUEST_TYPE_MAP, uriPath, 'others');
+    coll.update({_id: doc._id, wp_request_type:{$exists: false}}, {$pushAll: {"wp_request_type": requestType}});
 
-    var deviceType = getDeviceType(doc.http_user_agent);
-    coll.update({_id: doc._id, wp_device_type:{$exists: false}}, {$push: {"wp_device_type": deviceType}});
+    var dest = categorise(DESTINATION_MAP, uriPath, 'tomcat');
+    coll.update({_id: doc._id, wp_request_dest:{$exists: false}}, {$pushAll: {"wp_request_dest": dest}});
+
+    var deviceType = categorise(DEVICE_MAP, doc.http_user_agent, '');
+    coll.update({_id: doc._id, wp_device_type:{$exists: false}}, {$pushAll: {"wp_device_type": deviceType}});
 });
 
 // create index to speed up pie chart data search
 coll.ensureIndex({timestamp:1,wp_request_type:1});
 coll.ensureIndex({timestamp:1,wp_request_dest:1});
 coll.ensureIndex({timestamp:1,wp_device_type:1});
+
+// drop indexes
+coll.dropIndex({timestamp:1,wp_request_type:1});
+coll.dropIndex({timestamp:1,wp_request_dest:1});
+coll.dropIndex({timestamp:1,wp_device_type:1});
 
 // remove wp tags from all docs
 coll.update({wp_request_type:{$exists:true}}, {$unset: {wp_request_type:1}}, false, true);
