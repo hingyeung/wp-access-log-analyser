@@ -108,7 +108,7 @@ coll.find().forEach(function(doc) {
     }
 });
 
-var tagTypes = ["wp_request_types", "wp_request_dests", "wp_device_types", "wp_request_params", "geocode"];
+var tagTypes = ["wp_request_types", "wp_request_dests", "wp_device_types", "wp_request_params", "geocode", "wp_search_terms"];
 
 // create index to speed up pie chart data search
 for (var i = 0; i < tagTypes.length; i++) {
