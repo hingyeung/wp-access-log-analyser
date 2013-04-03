@@ -38,8 +38,24 @@ const DEVICE_MAP = [
             [/.+Firefox\/(\d+\.\d+)/, ['firefox']],
             [/Android (\d+\.\d+\.\d+)/, ['android']],
             [/Windows Phone (\d+\.\d+);/, ['windowsphone']],
-            [/MSIE (\d+\.\d+);/, ['msie']]
+            [/MSIE (\d+\.\d+);/, ['msie']],
+            [/iphoneclient|androidclient/, ['client']]
         ];
+
+const REQUEST_PARAM_MAP = [
+    [/sb=b&*/, ['business']],
+    [/sb=g&*/, ['government']],
+    [/sb=r&*/, ['residential']]
+];
+
+const SEARCH_TERM_MAP = [
+    [/nm=([^&]+)/, []],
+    [/location=([^&]+)/, []]
+];
+
+const GEOCODE = [
+    [/lat=(-*\d+\.\d+)&lon=(-*\d+\.\d+)/, []]
+];
 
 var categorise = function (categoryDef, input, defaultCategory) {
     var type = [];
@@ -54,7 +70,7 @@ var categorise = function (categoryDef, input, defaultCategory) {
         }
     }
 
-    if (type.length == 0) {
+    if (type.length == 0 && !defaultCategory) {
         return defaultCategory;
     }
 
@@ -68,29 +84,49 @@ coll.find().forEach(function(doc) {
     var uriPath = cleanupUriPath(doc.uri_path);
 
     var requestType = categorise(REQUEST_TYPE_MAP, uriPath, 'others');
-    coll.update({_id: doc._id, wp_request_type:{$exists: false}}, {$pushAll: {"wp_request_type": requestType}});
+    coll.update({_id: doc._id, wp_request_types:{$exists: false}}, {$pushAll: {"wp_request_types": requestType}});
 
     var dest = categorise(DESTINATION_MAP, uriPath, 'tomcat');
-    coll.update({_id: doc._id, wp_request_dest:{$exists: false}}, {$pushAll: {"wp_request_dest": dest}});
+    coll.update({_id: doc._id, wp_request_dests:{$exists: false}}, {$pushAll: {"wp_request_dests": dest}});
 
-    var deviceType = categorise(DEVICE_MAP, doc.http_user_agent, '');
-    coll.update({_id: doc._id, wp_device_type:{$exists: false}}, {$pushAll: {"wp_device_type": deviceType}});
+    var deviceType = categorise(DEVICE_MAP, doc.http_user_agent, null);
+    coll.update({_id: doc._id, wp_device_types:{$exists: false}}, {$pushAll: {"wp_device_types": deviceType}});
+
+    var params = categorise(REQUEST_PARAM_MAP, doc.uri_query, null);
+    coll.update({_id: doc._id, wp_request_params:{$exists: false}}, {$pushAll: {"wp_request_params": params}});
+
+    var geocode = categorise(GEOCODE, doc.uri_query, null);
+    coll.update({_id: doc._id, wp_geocode:{$exists: false}}, {$pushAll: {"wp_geocode": geocode}});
+
+    var searchTerms = categorise(SEARCH_TERM_MAP, doc.uri_query, null);
+    coll.update({_id: doc._id, wp_search_terms:{$exists: false}}, {$pushAll: {"wp_search_terms": searchTerms}});
 });
 
+var tagTypes = ["wp_request_types", "wp_request_dests", "wp_device_types", "wp_request_params", "geocode"];
+
 // create index to speed up pie chart data search
-coll.ensureIndex({timestamp:1,wp_request_type:1});
-coll.ensureIndex({timestamp:1,wp_request_dest:1});
-coll.ensureIndex({timestamp:1,wp_device_type:1});
+for (var i = 0; i < tagTypes.length; i++) {
+    var index = {};
+    index["timestamp"] = 1;
+    index[tagTypes[i]] = 1;
+    coll.ensureIndex(index);
+}
 
 // drop indexes
-coll.dropIndex({timestamp:1,wp_request_type:1});
-coll.dropIndex({timestamp:1,wp_request_dest:1});
-coll.dropIndex({timestamp:1,wp_device_type:1});
+for (var i = 0; i < tagTypes.length; i++) {
+    var index = {};
+    index["timestamp"] = 1;
+    index[tagTypes[i]] = 1;
+    coll.dropIndex(index);
+}
 
 // remove wp tags from all docs
-coll.update({wp_request_type:{$exists:true}}, {$unset: {wp_request_type:1}}, false, true);
-coll.update({wp_request_dest:{$exists:true}}, {$unset: {wp_request_dest:1}}, false, true);
-coll.update({wp_device_type:{$exists:true}}, {$unset: {wp_device_type:1}}, false, true);
+for (var i = 0; i < tagTypes.length; i++) {
+    var unsetValue = {}, query = {};
+    query[tagTypes[i]] = {$exists: true};
+    unsetValue[tagTypes[i]] = 1;
+    coll.update(query, {$unset: unsetValue}, false, true);
+}
 
 // count docs with wp_tags
-coll.find({wp_request_type:{$exists:true}}).count();
+coll.find({wp_request_types:{$exists:true}}).count();
