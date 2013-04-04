@@ -21,7 +21,8 @@ const REQUEST_TYPE_MAP = [
         [/\.image$/, ['image']],
         [/doSearch.action$/, ['search']],
         [/^\/listing\//, ['share']],
-        [/^\/(business|government|residential)-listing|showCaption.action$|captionLineListingDetails.action$/, ['result']],
+        [/^\/(business|government|residential)-listing\/(.+)|showCaption.action$|captionLineListingDetails.action$/, ['contact']],
+        [/^\/(business|government|residential)-listing\/(.+)\?.*contactPoint=/, ['share']],
         [/urlProxy.action$/, ['autoSuggest']],
         [/\.action$/, ['backend']],
         [/^\/+$/, ['homepage']],
@@ -43,13 +44,16 @@ const DEVICE_MAP = [
         ];
 
 const REQUEST_PARAM_MAP = [
-    [/sb=b&*/, ['business']],
-    [/sb=g&*/, ['government']],
-    [/sb=r&*/, ['residential']]
+    [/sd=b&*/, ['business']],
+    [/sd=g&*/, ['government']],
+    [/sd=r&*/, ['residential']]
 ];
 
 const SEARCH_TERM_MAP = [
-    [/nm=([^&]+)/, []],
+    [/nm=([^&]+)/, []]
+];
+
+const SEARCH_LOCATION_MAP = [
     [/location=([^&]+)/, []]
 ];
 
@@ -69,7 +73,9 @@ var categorise = function (categoryDef, input, defaultCategory) {
         if (matches) {
             type = type.concat(categoryDef[i][1]);
             for (var j = 1; j < matches.length; j++) {
-                type.push(matches[j]);
+                if (matches[j]) {
+                    type.push(matches[j]);
+                }
             }
         }
     }
@@ -80,34 +86,34 @@ var categorise = function (categoryDef, input, defaultCategory) {
     return type;
 };
 
+
 var environment = 'prod';
 var coll = db.getCollection(environment);
+
+var addTagsToDoc = function(doc, tagDefMap, input, defaultTag, tagField) {
+    var tags = categorise(tagDefMap, input, defaultTag);
+    var updateQuery = {};
+    updateQuery["_id"] = doc._id;
+    updateQuery[tagField] = {$exists: false};
+    var tagValueObj = {};
+    tagValueObj[tagField] = tags;
+    coll.update(updateQuery, {$pushAll: tagValueObj});
+}
 
 coll.find().forEach(function(doc) {
     var uriPath = cleanupUriPath(doc.uri_path);
 
-    var requestType = categorise(REQUEST_TYPE_MAP, uriPath, 'others');
-    coll.update({_id: doc._id, wp_request_types:{$exists: false}}, {$pushAll: {"wp_request_types": requestType}});
-
-    var dest = categorise(DESTINATION_MAP, uriPath, 'tomcat');
-    coll.update({_id: doc._id, wp_request_dests:{$exists: false}}, {$pushAll: {"wp_request_dests": dest}});
-
-    var deviceType = categorise(DEVICE_MAP, doc.http_user_agent, null);
-    coll.update({_id: doc._id, wp_device_types:{$exists: false}}, {$pushAll: {"wp_device_types": deviceType}});
-
-    var params = categorise(REQUEST_PARAM_MAP, doc.uri_query, null);
-    coll.update({_id: doc._id, wp_request_params:{$exists: false}}, {$pushAll: {"wp_request_params": params}});
-
-    var geocode = categorise(GEOCODE, doc.uri_query, null);
-    coll.update({_id: doc._id, wp_geocode:{$exists: false}}, {$pushAll: {"wp_geocode": geocode}});
-
+    addTagsToDoc(doc, REQUEST_TYPE_MAP, uriPath, 'others', 'wp_request_types');
+    addTagsToDoc(doc, DESTINATION_MAP, uriPath, 'tomcat', 'wp_request_dests');
+    addTagsToDoc(doc, DEVICE_MAP, doc.http_user_agent, null, 'wp_device_types');
+    addTagsToDoc(doc, REQUEST_PARAM_MAP, doc.uri_query, null, 'wp_request_params');
     if (uriPath.match(/doSearch.action$/)) {
-        var searchTerms = categorise(SEARCH_TERM_MAP, doc.uri_query, null);
-        coll.update({_id: doc._id, wp_search_terms:{$exists: false}}, {$pushAll: {"wp_search_terms": searchTerms}});
+        addTagsToDoc(doc, SEARCH_TERM_MAP, doc.uri_query, null, 'wp_search_terms');
+        addTagsToDoc(doc, SEARCH_LOCATION_MAP, doc.uri_query, null, 'wp_search_locations');
     }
 });
 
-var tagTypes = ["wp_request_types", "wp_request_dests", "wp_device_types", "wp_request_params", "geocode", "wp_search_terms"];
+var tagTypes = ["wp_request_types", "wp_request_dests", "wp_device_types", "wp_request_params", "geocode", "wp_search_terms", "wp_search_locations"];
 
 // create index to speed up pie chart data search
 for (var i = 0; i < tagTypes.length; i++) {
@@ -135,3 +141,34 @@ for (var i = 0; i < tagTypes.length; i++) {
 
 // count docs with wp_tags
 coll.find({wp_request_types:{$exists:true}}).count();
+
+
+// top 10 business search term / location
+db.prod.aggregate(
+    [
+        { $match : { uri_path:/doSearch.action/, wp_search_terms:{ $ne: [] }, wp_request_params: 'business' }},
+        {
+            $group:{
+                _id:"$wp_search_terms",
+                counts:{ $sum:1 }
+            }
+        },
+        {$sort:{counts:-1}},
+        {$limit:10}
+    ]
+);
+
+// top 10 business captions
+db.prod.aggregate(
+    [
+        { $match : { wp_request_types:'contact', wp_request_types:'business' }},
+        {
+            $group:{
+                _id:"$wp_request_types",
+                counts:{ $sum:1 }
+            }
+        },
+        {$sort:{counts:-1}},
+        {$limit:10}
+    ]
+);
