@@ -107,6 +107,7 @@ coll.find().forEach(function(doc) {
     addTagsToDoc(doc, DESTINATION_MAP, uriPath, 'tomcat', 'wp_request_dests');
     addTagsToDoc(doc, DEVICE_MAP, doc.http_user_agent, null, 'wp_device_types');
     addTagsToDoc(doc, REQUEST_PARAM_MAP, doc.uri_query, null, 'wp_request_params');
+    addTagsToDoc(doc, GEOCODE, doc.uri_query, null, 'geocode');
     if (uriPath.match(/doSearch.action$/)) {
         addTagsToDoc(doc, SEARCH_TERM_MAP, doc.uri_query, null, 'wp_search_terms');
         addTagsToDoc(doc, SEARCH_LOCATION_MAP, doc.uri_query, null, 'wp_search_locations');
