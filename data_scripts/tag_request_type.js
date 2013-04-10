@@ -92,6 +92,9 @@ var coll = db.getCollection(environment);
 
 var addTagsToDoc = function(doc, tagDefMap, input, defaultTag, tagField) {
     var tags = categorise(tagDefMap, input, defaultTag);
+    if (tags.length == 0) {
+        return;
+    }
     var updateQuery = {};
     updateQuery["_id"] = doc._id;
     updateQuery[tagField] = {$exists: false};
