@@ -13,6 +13,7 @@ const DESTINATION_MAP = [
 ];
 
 const REQUEST_TYPE_MAP = [
+        [/\/quickFinderDetail\.action$/, ['qf']],
         [/\.css$/, ['css']],
         [/\.js$/, ['javascript']],
         [/^\/ics\//, ['image']],
@@ -28,7 +29,13 @@ const REQUEST_TYPE_MAP = [
         [/^\/+$/, ['homepage']],
         [/\/home.action$/, ['homepage']],
         [/^\/ics\//, ['ics']],
-        [/^\/cp\//, ['cp']]
+        [/^\/cp\//, ['cp']],
+		[/^\/mylist\/createList.action/, ['createlist']],
+		[/^\/mylist\/displayListDetails.action/, ['displaylist']],
+		[/^\/mylist\/addToNewList.action/, ['addtonewlist']],
+		[/^\/mylist\/renameList.action/, ['renamelist']],
+		[/^\/mylist\/displayListDetails.action/, ['displaylistdetails']],
+		[/^\/mylist\/ajaxAddToList.action/, ['addtolist']]
     ];
 
 const DEVICE_MAP = [
