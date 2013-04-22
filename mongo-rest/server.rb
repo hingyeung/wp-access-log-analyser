@@ -1,6 +1,6 @@
 require "sinatra"
 require "mongo"
-require "URI"
+require "uri"
 require "json"
 
 include Mongo

@@ -1,1 +1,6 @@
 rvm --create use 1.9.2-p180@simple-ruby-mongo-server
+
+# install bundle gem if not yet available
+if [ ! "`gem list | grep bundler`" ]; then gem install bundler --no-rdoc --no-ri ; fi
+
+bundle install

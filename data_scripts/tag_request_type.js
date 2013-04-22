@@ -1,4 +1,5 @@
 var cleanupUriPath = function(request_uri_path) {
+	if (typeof request_uri_path == 'undefined') return '';
     var uri_path = request_uri_path;
     if (request_uri_path.indexOf(';') != -1) {
             uri_path = request_uri_path.substring(0, request_uri_path.indexOf(';'));
@@ -24,7 +25,7 @@ const REQUEST_TYPE_MAP = [
         [/^\/listing\//, ['share']],
         [/^\/(business|government|residential)-listing\/(.+)|showCaption.action$|captionLineListingDetails.action$/, ['contact']],
         [/^\/(business|government|residential)-listing\/(.+)\?.*contactPoint=/, ['share']],
-        [/urlProxy.action$/, ['autoSuggest']],
+        [/^\/autosuggest$/, ['autoSuggest']],
         [/\.action$/, ['backend']],
         [/^\/+$/, ['homepage']],
         [/\/home.action$/, ['homepage']],

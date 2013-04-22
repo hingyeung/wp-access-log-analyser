@@ -132,14 +132,14 @@ angular.module('wala', ['wala.services']).
 
         $scope.getRequestTypeData = function (db, coll) {
             $scope.chartData = [];
-            var requestTypes = ['search', 'result', 'autoSuggest', 'homepage'];
+            var requestTypes = ['search', 'result', 'autoSuggest', 'homepage', 'contact', 'share'];
             for (var i = 0; i < requestTypes.length; i++) {
                 var query = {
                     "timestamp":  {
                         "$gte": unixTimestampToTimestampWithTZOffsetInSecs($scope.fromTimestamp),
                         "$lt": unixTimestampToTimestampWithTZOffsetInSecs($scope.toTimestamp)
                     },
-                    "wp_request_type": requestTypes[i]
+                    "wp_request_types": requestTypes[i]
                 };
                 console.log(JSON.stringify(query));
                 var promise = chartService.getCount(db, coll, query);
