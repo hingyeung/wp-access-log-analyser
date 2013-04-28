@@ -19,7 +19,6 @@ var map = function() {
 
     var updateResult = function (doc, result) {
         var inArea = getDistanceFromLatLonInKm(doc.cur_loc.lat, doc.cur_loc.lon, doc.geocode[0], doc.geocode[1]) < 2;
-        print('asdfasfdas');
 
         if (doc.wp_request_params == null) {
             return;
