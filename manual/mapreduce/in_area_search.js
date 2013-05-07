@@ -71,16 +71,16 @@ var reduce = function(key, values) {
         reducedValues.busTotal += values[idx].busTotal;
         reducedValues.govTotal += values[idx].govTotal;
         reducedValues.resTotal += values[idx].resTotal;
-        reducedValues.busTotal += values[idx].busTotal;
-        reducedValues.govTotal += values[idx].govTotal;
-        reducedValues.resTotal += values[idx].resTotal;
+        reducedValues.busInArea += values[idx].busInArea;
+        reducedValues.govInArea += values[idx].govInArea;
+        reducedValues.resInArea += values[idx].resInArea;
     }
 
     return reducedValues;
 };
 
-db.prod_search_0_hour.mapReduce(
+db.prod.mapReduce(
     map,
     reduce,
-    { out:"map_reduce_example" }
+    { out:"in_area_search_results" }
 );
