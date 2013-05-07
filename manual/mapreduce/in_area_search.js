@@ -24,13 +24,13 @@ var map = function() {
             return;
         }
 
-        if (doc.wp_request_params.indexOf('business')) {
+        if (doc.wp_request_params.indexOf('business') != -1) {
             result.busTotal = 1;
             if (inArea) {result.busInArea = 1;}
-        } else if (doc.wp_request_params.indexOf('government')) {
+        } else if (doc.wp_request_params.indexOf('government') != -1) {
             result.govTotal = 1;
             if (inArea) {result.govInArea = 1;}
-        } else if (doc.wp_request_params.indexOf('residential')) {
+        } else if (doc.wp_request_params.indexOf('residential') != -1) {
             result.resTotal = 1;
             if (inArea) {result.resInArea = 1;}
         }
@@ -48,7 +48,8 @@ var map = function() {
     // TODO: rename cur_loc to search_loc_geocode and geocode to gps_loc. This is too confusing
     if (this.cur_loc != null && this.geocode != null) {
         updateResult(this, result);
-        emit('inArea', result);
+        //emit(this.date_wday, result);
+        emit('in_area', result);
     }
 };
 
