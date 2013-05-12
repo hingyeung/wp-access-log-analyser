@@ -1,29 +1,28 @@
-var map = function () {
-    var requestType = getRequestType(this.uri_path);
-    if (requestType == 'Searches') {
-        var name = getRequestParamValue(this.uri_query, 'nm');
-        var searchType = getRequestParamValue(this.uri_query, 'sd');
-        var location = getRequestParamValue(this.uri_query, 'location');
+// combined
+db.prod.aggregate(
+    [
+        { $match: { wp_request_types: 'search'}},
+        { $project: { wp_request_params: 1, wp_search_terms: 1 } },
+        { $group: {
+            _id : {search_term: "$wp_search_terms", type: "$wp_search_params"},
+            counts : { $sum : 1 }
+        } },
+        { $sort: {counts: -1 }},
+        { $limit: 20 }
+    ]
+)
 
-        if (searchType != '' && name != '') {
-            emit({searchType: searchType, name: name, location: location}, 1);
-        }
-    }
-}
-
-var reduce = function (key, values) {
-    return Array.sum(values);
-}
-
-var mapReduceToNestArray = function(cursor) {
-    var nestedArray = [];
-    while(cursor.hasNext()) {
-        var res = cursor.next();
-        var key = decodeURIComponent((res._id.name + ', ' + res._id.location + '').replace(/\+/g, '%20'));
-        nestedArray.push([key, res.value]);
-    }
-    return nestedArray;
-}
-
-db.prod.mapReduce(map, reduce, {out:'tmp_mapreduce_out', query:{uri_path:{$exists:1}, uri_query:{$exists:1}}});
-mapReduceToNestArray(db.tmp_mapreduce_out.find({'_id.searchType': 'b'}).sort({'value':-1}).limit(10));
+// business only
+db.prod.aggregate(
+    [
+        { $match: { wp_request_types: 'search', wp_search_terms: {$exists: true}, wp_request_params: 'business'}},
+        { $project: { wp_request_params: 1, wp_search_terms: 1 } },
+        { $unwind : "$wp_search_terms" },
+        { $group: {
+            _id : {$toLower: "$wp_search_terms"},
+            counts : { $sum : 1 }
+        } },
+        { $sort: {counts: -1 }},
+        { $limit: 20 }
+    ]
+)
